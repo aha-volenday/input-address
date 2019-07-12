@@ -1,0 +1,58 @@
+{
+	"name": "@volenday/input-address",
+	"version": "0.0.1",
+	"main": "dist/index.min.js",
+	"author": "Rayan Feliciano <rayan.feliciano@volenday.com>",
+	"license": "MIT",
+	"private": false,
+	"scripts": {
+		"dev": "webpack --progress --watch",
+		"build": "webpack --progress -p",
+		"prepublishOnly": "webpack --progress -p"
+	},
+	"peerDependencies": {
+		"@volenday/input-date": "^0.0.12",
+		"antd": "^3.20.1",
+		"react": "^16.8.6",
+		"react-google-maps": "^9.4.5"
+	},
+	"dependencies": {
+		"@volenday/input-date": "^0.0.12",
+		"antd": "^3.20.1",
+		"react": "^16.8.6",
+		"react-google-maps": "^9.4.5",
+		"webpack": "^4.35.3"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.5.4",
+		"@babel/plugin-proposal-class-properties": "^7.5.0",
+		"@babel/plugin-proposal-decorators": "^7.4.4",
+		"@babel/plugin-proposal-do-expressions": "^7.5.0",
+		"@babel/plugin-proposal-export-default-from": "^7.5.2",
+		"@babel/plugin-proposal-export-namespace-from": "^7.5.2",
+		"@babel/plugin-proposal-function-bind": "^7.2.0",
+		"@babel/plugin-proposal-function-sent": "^7.5.0",
+		"@babel/plugin-proposal-json-strings": "^7.2.0",
+		"@babel/plugin-proposal-logical-assignment-operators": "^7.2.0",
+		"@babel/plugin-proposal-nullish-coalescing-operator": "^7.4.4",
+		"@babel/plugin-proposal-numeric-separator": "^7.2.0",
+		"@babel/plugin-proposal-optional-chaining": "^7.2.0",
+		"@babel/plugin-proposal-pipeline-operator": "^7.5.0",
+		"@babel/plugin-proposal-throw-expressions": "^7.2.0",
+		"@babel/plugin-syntax-dynamic-import": "^7.2.0",
+		"@babel/plugin-syntax-import-meta": "^7.2.0",
+		"@babel/plugin-transform-async-to-generator": "^7.5.0",
+		"@babel/preset-env": "^7.5.4",
+		"@babel/preset-react": "^7.0.0",
+		"@babel/runtime": "^7.5.4",
+		"babel-loader": "^8.0.6",
+		"babel-plugin-react-html-attrs": "^2.1.0",
+		"core-js": "^3.1.4",
+		"css-loader": "^3.0.0",
+		"file-loader": "^4.0.0",
+		"node-sass": "^4.12.0",
+		"sass-loader": "^7.1.0",
+		"style-loader": "^0.23.1",
+		"webpack-cli": "^3.3.5"
+	}
+}
