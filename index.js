@@ -2,11 +2,12 @@ import React, { Component, Fragment } from 'react';
 import { withGoogleMap, GoogleMap, Marker } from 'react-google-maps';
 import SearchBox from 'react-google-maps/lib/components/places/SearchBox';
 import InputDate from '@volenday/input-date';
-
-// ant design
-import { Button, Checkbox, Input, Message, Popover } from 'antd';
+import validate from 'validate.js';
+import { Button, Form, Checkbox, Input, message, Popover } from 'antd';
 
 const { StandaloneSearchBox } = require('react-google-maps/lib/components/places/StandaloneSearchBox');
+
+import './styles.css';
 
 const MapComponent = withGoogleMap(props => {
 	return (
@@ -61,6 +62,7 @@ const MapComponent = withGoogleMap(props => {
 
 export default class InputAddress extends Component {
 	state = {
+		errors: [],
 		bounds: null,
 		center: { lat: 14.5613, lng: 121.0273 },
 		custom: false,
@@ -119,27 +121,48 @@ export default class InputAddress extends Component {
 	}
 
 	onSearchChange = () => {
-		this.setState({ hasChange: true });
+		const { action } = this.props;
+
+		this.setState({ hasChange: action === 'add' ? false : true });
 	};
 
 	handleInputAddressChange = value => {
-		this.setState({ hasChange: true, localAddressValue: value });
+		const { action } = this.props;
+
+		this.setState({ hasChange: action === 'add' ? false : true, localAddressValue: value });
 	};
 
 	setAddressObject = value => {
 		return JSON.stringify({ lat: null, lng: null, address: value, url: '' });
 	};
 
+	onChange = async value => {
+		const { action, id, onValidate } = this.props;
+
+		const errors = this.validate(value);
+		await this.setState({ errors, localAddressValue: value, hasChange: action === 'add' ? false : true });
+		if (onValidate) onValidate(id, errors);
+	};
+
+	validate = value => {
+		const { id, required = false } = this.props;
+
+		const constraints = {
+			[id]: {
+				presence: { allowEmpty: !required }
+			}
+		};
+
+		const errors = validate({ [id]: value }, constraints);
+		return errors ? errors[id] : [];
+	};
+
+	handlePopoverVisible = visible => {
+		this.setState({ isPopoverVisible: visible });
+	};
+
 	renderInput() {
-		const {
-			disabled = false,
-			id,
-			label = '',
-			onChange,
-			placeholder = '',
-			required = false,
-			value = ''
-		} = this.props;
+		const { disabled = false, id, label = '', onChange, placeholder = '', value = '' } = this.props;
 
 		let address = '';
 		if (value != '') {
@@ -148,27 +171,24 @@ export default class InputAddress extends Component {
 
 		return (
 			<Input
-				type="text"
-				name={id}
 				allowClear
 				autoComplete="off"
 				disabled={disabled}
-				placeholder={placeholder || label || id}
-				required={required}
-				size="large"
+				name={id}
 				onBlur={e => {
 					if (e.target.value != address) onChange(id, this.setAddressObject(e.target.value));
 				}}
 				onChange={e => {
 					if (this.state.localAddressValue != '' && address == '')
 						onChange(id, this.setAddressObject(e.target.value));
-
-					this.handleInputAddressChange(e.target.value);
+					this.onChange(e.target.value);
 				}}
 				onPressEnter={e => {
 					onChange(id, this.setAddressObject(e.target.value));
 					return true;
 				}}
+				placeholder={placeholder || label || id}
+				type="text"
 				value={this.state.localAddressValue || ''}
 			/>
 		);
@@ -179,6 +199,7 @@ export default class InputAddress extends Component {
 		const {
 			disabled = false,
 			id,
+			action,
 			label = '',
 			onChange,
 			placeholder = '',
@@ -217,7 +238,11 @@ export default class InputAddress extends Component {
 							autoComplete="off"
 							placeholder={placeholder || label || id}
 							onChange={e =>
-								this.setState({ hasChange: true, tempValue: e.target.value, tempValueTyping: true })
+								this.setState({
+									hasChange: action === 'add' ? false : true,
+									tempValue: e.target.value,
+									tempValueTyping: true
+								})
 							}
 							value={tempValue}
 							required={required}
@@ -233,7 +258,7 @@ export default class InputAddress extends Component {
 
 	renderInputMap() {
 		let { bounds, center = { lat: 14.5613, lng: 121.0273 }, markers, tempValue } = this.state;
-		const { id, label = '', onChange, placeholder = '', required = false, value = '' } = this.props;
+		const { id, action, label = '', onChange, placeholder = '', required = false, value = '' } = this.props;
 
 		if (value != '') {
 			let address = JSON.parse(value).address;
@@ -260,7 +285,7 @@ export default class InputAddress extends Component {
 					setTimeout(() => {
 						const places = this.searchTextBox.current.getPlaces();
 						if (!places) {
-							Message.error('Address not found. Try to press enter in the address bar.');
+							message.error('Address not found. Try to press enter in the address bar.');
 						}
 					}, 1000);
 				}}
@@ -270,7 +295,7 @@ export default class InputAddress extends Component {
 				}
 				tempValue={tempValue}
 				onPlacesChanged={async e => {
-					this.setState({ hasChange: true });
+					this.setState({ hasChange: action === 'add' ? false : true });
 
 					const places = this.searchTextBox.current.getPlaces();
 					const bounds = new window.google.maps.LatLngBounds();
@@ -345,10 +370,11 @@ export default class InputAddress extends Component {
 	};
 
 	render() {
-		const { custom, showMap, hasChange } = this.state;
+		const { errors, custom, showMap, hasChange } = this.state;
 		const {
 			disabled = false,
 			id,
+			action,
 			label = '',
 			required = false,
 			withLabel = false,
@@ -356,156 +382,44 @@ export default class InputAddress extends Component {
 			historyTrack = false
 		} = this.props;
 
-		if (withLabel) {
-			if (historyTrack) {
-				return (
-					<div className="form-group">
-						<label for={id}>{required ? `*${label}` : label}</label>
-						<div class="float-right">
-							<label>
-								<Checkbox
-									checked={custom}
-									name={id}
-									onChange={e => this.setState({ custom: e.target.checked })}
-									disabled={disabled}
-								/>
-								<span>&nbsp;Custom Address</span>
-							</label>
-							{!custom && (
-								<Fragment>
-									<span>&nbsp;&nbsp;</span>
-									<label>
-										<Checkbox
-											checked={showMap && withMap}
-											name={id}
-											onChange={e => this.setState({ showMap: e.target.checked })}
-											disabled={disabled}
-										/>
-										<span>&nbsp;Map</span>
-									</label>
-								</Fragment>
-							)}
-							{hasChange && this.renderPopover()}
-						</div>
-						{custom
-							? this.renderInput()
-							: showMap && withMap
-							? this.renderInputMap()
-							: this.renderInputStandalone()}
-					</div>
-				);
-			}
+		const formItemCommonProps = {
+			colon: false,
+			help: errors.length != 0 ? errors[0] : '',
+			label: withLabel ? label : false,
+			required,
+			validateStatus: errors.length != 0 ? 'error' : 'success'
+		};
 
-			return (
-				<div className="form-group">
-					<label for={id}>{required ? `*${label}` : label}</label>
-					<div class="float-right">
-						<label>
-							<Checkbox
-								checked={custom}
-								name={id}
-								onChange={e => this.setState({ custom: e.target.checked })}
-								disabled={disabled}
-							/>
-							<span>&nbsp;Custom Address</span>
-						</label>
-						{!custom && (
-							<Fragment>
-								<span>&nbsp;&nbsp;</span>
-								<label>
-									<Checkbox
-										checked={showMap && withMap}
-										name={id}
-										onChange={e => this.setState({ showMap: e.target.checked })}
-										disabled={disabled}
-									/>
-									<span>&nbsp;Map</span>
-								</label>
-							</Fragment>
-						)}
-					</div>
-					{custom
-						? this.renderInput()
-						: showMap && withMap
-						? this.renderInputMap()
-						: this.renderInputStandalone()}
-				</div>
-			);
-		} else {
-			if (historyTrack) {
-				return (
+		return (
+			<Form.Item {...formItemCommonProps}>
+				{historyTrack && hasChange && action !== 'add' && this.renderPopover()}
+				<Checkbox
+					checked={custom}
+					name={id}
+					onChange={e => this.setState({ custom: e.target.checked })}
+					disabled={disabled}
+				/>
+				<span>&nbsp;Custom Address</span>
+				{!custom && (
 					<Fragment>
-						<div class="float-right">
-							<label>
-								<Checkbox
-									checked={custom}
-									name={id}
-									onChange={e => this.setState({ custom: e.target.checked })}
-									disabled={disabled}
-								/>
-								<span>&nbsp;Custom Address</span>
-							</label>
-							{!custom && (
-								<Fragment>
-									<span>&nbsp;&nbsp;</span>
-									<label>
-										<Checkbox
-											checked={showMap && withMap}
-											name={id}
-											onChange={e => this.setState({ showMap: e.target.checked })}
-											disabled={disabled}
-										/>
-										<span>&nbsp;Map</span>
-									</label>
-								</Fragment>
-							)}
-							{hasChange && this.renderPopover()}
-						</div>
-						{custom
-							? this.renderInput()
-							: showMap && withMap
-							? this.renderInputMap()
-							: this.renderInputStandalone()}
-					</Fragment>
-				);
-			}
-
-			return (
-				<Fragment>
-					<div class="float-right">
+						<span>&nbsp;&nbsp;</span>
 						<label>
 							<Checkbox
-								checked={custom}
+								checked={showMap && withMap}
 								name={id}
-								onChange={e => this.setState({ custom: e.target.checked })}
+								onChange={e => this.setState({ showMap: e.target.checked })}
 								disabled={disabled}
 							/>
-							<span>&nbsp;Custom Address</span>
+							<span>&nbsp;Map</span>
 						</label>
-						{!custom && (
-							<Fragment>
-								<span>&nbsp;&nbsp;</span>
-								<label>
-									<Checkbox
-										checked={showMap && withMap}
-										name={id}
-										onChange={e => this.setState({ showMap: e.target.checked })}
-										disabled={disabled}
-									/>
-									<span>&nbsp;Map</span>
-								</label>
-							</Fragment>
-						)}
-					</div>
-					{custom
-						? this.renderInput()
-						: showMap && withMap
-						? this.renderInputMap()
-						: this.renderInputStandalone()}
-				</Fragment>
-			);
-		}
-
-		return null;
+					</Fragment>
+				)}
+				{custom
+					? this.renderInput()
+					: showMap && withMap
+					? this.renderInputMap()
+					: this.renderInputStandalone()}
+			</Form.Item>
+		);
 	}
 }

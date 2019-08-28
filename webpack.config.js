@@ -55,6 +55,7 @@ module.exports = {
 	externals: {
 		'@volenday/input-date': 'commonjs2 @volenday/input-date',
 		'react-google-maps': 'commonjs2 react-google-maps',
+		'validate.js': 'commonjs2 validate.js',
 		antd: 'commonjs2 antd',
 		react: 'commonjs2 react'
 	},

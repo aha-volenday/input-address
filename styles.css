@@ -1,0 +1,7 @@
+.ant-form-item-label {
+	line-height: 1 !important;
+}
+
+.ant-form-item-label label {
+	margin: 0px !important;
+}
