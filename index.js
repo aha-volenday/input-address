@@ -1,9 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import { withGoogleMap, GoogleMap, Marker } from 'react-google-maps';
 import SearchBox from 'react-google-maps/lib/components/places/SearchBox';
-import InputDate from '@volenday/input-date';
 import validate from 'validate.js';
-import { Button, Form, Checkbox, Input, message, Popover } from 'antd';
+import { Form, Checkbox, Input, message } from 'antd';
 
 const { StandaloneSearchBox } = require('react-google-maps/lib/components/places/StandaloneSearchBox');
 
@@ -28,7 +27,6 @@ const MapComponent = withGoogleMap(props => {
 					onBlur={props.onBlur}
 					onChange={e => {
 						props.onChangeTemp(e.target.value);
-						props.onSearchChange();
 					}}
 					onKeyDown={e => {
 						if (e.key === 'Enter') {
@@ -77,8 +75,6 @@ export default class InputAddress extends Component {
 		showMap: true,
 		tempValue: '',
 		tempValueTyping: false,
-		hasChange: false,
-		isPopoverVisible: false,
 		localAddressValue: ''
 	};
 
@@ -120,16 +116,8 @@ export default class InputAddress extends Component {
 		}
 	}
 
-	onSearchChange = () => {
-		const { action } = this.props;
-
-		this.setState({ hasChange: action === 'add' ? false : true });
-	};
-
 	handleInputAddressChange = value => {
-		const { action } = this.props;
-
-		this.setState({ hasChange: action === 'add' ? false : true, localAddressValue: value });
+		this.setState({ localAddressValue: value });
 	};
 
 	setAddressObject = value => {
@@ -137,10 +125,10 @@ export default class InputAddress extends Component {
 	};
 
 	onChange = async value => {
-		const { action, id, onValidate } = this.props;
+		const { id, onValidate } = this.props;
 
 		const errors = this.validate(value);
-		await this.setState({ errors, localAddressValue: value, hasChange: action === 'add' ? false : true });
+		await this.setState({ errors, localAddressValue: value });
 		if (onValidate) onValidate(id, errors);
 	};
 
@@ -155,10 +143,6 @@ export default class InputAddress extends Component {
 
 		const errors = validate({ [id]: value }, constraints);
 		return errors ? errors[id] : [];
-	};
-
-	handlePopoverVisible = visible => {
-		this.setState({ isPopoverVisible: visible });
 	};
 
 	renderInput() {
@@ -239,7 +223,6 @@ export default class InputAddress extends Component {
 							placeholder={placeholder || label || id}
 							onChange={e =>
 								this.setState({
-									hasChange: action === 'add' ? false : true,
 									tempValue: e.target.value,
 									tempValueTyping: true
 								})
@@ -276,7 +259,6 @@ export default class InputAddress extends Component {
 				containerElement={<div style={{ height: `400px`, clear: 'both' }} />}
 				mapElement={<div style={{ height: `100%` }} />}
 				onMapMounted={this.map}
-				onSearchChange={this.onSearchChange}
 				onSearchBoxMounted={this.searchTextBox}
 				bounds={bounds}
 				center={center}
@@ -295,8 +277,6 @@ export default class InputAddress extends Component {
 				}
 				tempValue={tempValue}
 				onPlacesChanged={async e => {
-					this.setState({ hasChange: action === 'add' ? false : true });
-
 					const places = this.searchTextBox.current.getPlaces();
 					const bounds = new window.google.maps.LatLngBounds();
 
@@ -331,56 +311,9 @@ export default class InputAddress extends Component {
 		);
 	}
 
-	handlePopoverVisible = visible => {
-		this.setState({ isPopoverVisible: visible });
-	};
-
-	renderPopover = () => {
-		const { isPopoverVisible } = this.state;
-		const { id, label = '', historyTrackValue = '', onHistoryTrackChange } = this.props;
-
-		return (
-			<Popover
-				content={
-					<InputDate
-						id={id}
-						label={label}
-						required={true}
-						withTime={true}
-						withLabel={true}
-						value={historyTrackValue}
-						onChange={onHistoryTrackChange}
-					/>
-				}
-				trigger="click"
-				title="History Track"
-				visible={isPopoverVisible}
-				onVisibleChange={this.handlePopoverVisible}>
-				<span style={{ marginLeft: '5px' }}>
-					<Button
-						type="link"
-						shape="circle-outline"
-						icon="warning"
-						size="small"
-						style={{ color: '#ffc107' }}
-					/>
-				</span>
-			</Popover>
-		);
-	};
-
 	render() {
-		const { errors, custom, showMap, hasChange } = this.state;
-		const {
-			disabled = false,
-			id,
-			action,
-			label = '',
-			required = false,
-			withLabel = false,
-			withMap = true,
-			historyTrack = false
-		} = this.props;
+		const { errors, custom, showMap } = this.state;
+		const { disabled = false, id, label = '', required = false, withLabel = false, withMap = true } = this.props;
 
 		const formItemCommonProps = {
 			colon: false,
@@ -392,7 +325,6 @@ export default class InputAddress extends Component {
 
 		return (
 			<Form.Item {...formItemCommonProps}>
-				{historyTrack && hasChange && action !== 'add' && this.renderPopover()}
 				<Checkbox
 					checked={custom}
 					name={id}
