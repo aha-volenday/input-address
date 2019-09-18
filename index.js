@@ -48,6 +48,7 @@ const MapComponent = withGoogleMap(props => {
 						textOverflow: 'ellipses'
 					}}
 					size="large"
+					name={props.id}
 					allowClear
 				/>
 			</SearchBox>
