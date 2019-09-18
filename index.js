@@ -160,15 +160,15 @@ export default class InputAddress extends Component {
 				disabled={disabled}
 				name={id}
 				onBlur={e => {
-					if (e.target.value != address) onChange(id, this.setAddressObject(e.target.value));
+					if (e.target.value != address) onChange(e, id, this.setAddressObject(e.target.value));
 				}}
 				onChange={e => {
 					if (this.state.localAddressValue != '' && address == '')
-						onChange(id, this.setAddressObject(e.target.value));
+						onChange(e, id, this.setAddressObject(e.target.value));
 					this.onChange(e.target.value);
 				}}
 				onPressEnter={e => {
-					onChange(id, this.setAddressObject(e.target.value));
+					onChange(e, id, this.setAddressObject(e.target.value));
 					return true;
 				}}
 				placeholder={placeholder || label || id}
@@ -183,7 +183,6 @@ export default class InputAddress extends Component {
 		const {
 			disabled = false,
 			id,
-			action,
 			label = '',
 			onChange,
 			placeholder = '',
@@ -206,6 +205,7 @@ export default class InputAddress extends Component {
 						const places = this.standAloneTextBox.current.getPlaces();
 						await this.setState({ tempValue: places[0].formatted_address, tempValueTyping: false });
 						onChange(
+							e,
 							id,
 							JSON.stringify({
 								lat: places[0].geometry.location.lat(),
@@ -241,7 +241,7 @@ export default class InputAddress extends Component {
 
 	renderInputMap() {
 		let { bounds, center = { lat: 14.5613, lng: 121.0273 }, markers, tempValue } = this.state;
-		const { id, action, label = '', onChange, placeholder = '', required = false, value = '' } = this.props;
+		const { id, label = '', onChange, placeholder = '', required = false, value = '' } = this.props;
 
 		if (value != '') {
 			let address = JSON.parse(value).address;
@@ -296,6 +296,7 @@ export default class InputAddress extends Component {
 						tempValueTyping: false
 					});
 					onChange(
+						e,
 						id,
 						JSON.stringify({
 							lat: places[0].geometry.location.lat(),
