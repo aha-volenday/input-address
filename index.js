@@ -161,15 +161,28 @@ export default class InputAddress extends Component {
 				disabled={disabled}
 				name={id}
 				onBlur={e => {
-					if (e.target.value != address) onChange(e, id, this.setAddressObject(e.target.value));
+					if (e.target.value != address)
+						onChange(
+							{ target: { name: id, value: this.setAddressObject(e.target.value) } },
+							id,
+							this.setAddressObject(e.target.value)
+						);
 				}}
 				onChange={e => {
 					if (this.state.localAddressValue != '' && address == '')
-						onChange(e, id, this.setAddressObject(e.target.value));
+						onChange(
+							{ target: { name: id, value: this.setAddressObject(e.target.value) } },
+							id,
+							this.setAddressObject(e.target.value)
+						);
 					this.onChange(e.target.value);
 				}}
 				onPressEnter={e => {
-					onChange(e, id, this.setAddressObject(e.target.value));
+					onChange(
+						{ target: { name: id, value: this.setAddressObject(e.target.value) } },
+						id,
+						this.setAddressObject(e.target.value)
+					);
 					return true;
 				}}
 				placeholder={placeholder || label || id}
@@ -206,7 +219,17 @@ export default class InputAddress extends Component {
 						const places = this.standAloneTextBox.current.getPlaces();
 						await this.setState({ tempValue: places[0].formatted_address, tempValueTyping: false });
 						onChange(
-							e,
+							{
+								target: {
+									name: id,
+									value: JSON.stringify({
+										lat: places[0].geometry.location.lat(),
+										lng: places[0].geometry.location.lng(),
+										address: places[0].formatted_address,
+										url: places[0].url
+									})
+								}
+							},
 							id,
 							JSON.stringify({
 								lat: places[0].geometry.location.lat(),
@@ -297,7 +320,17 @@ export default class InputAddress extends Component {
 						tempValueTyping: false
 					});
 					onChange(
-						e,
+						{
+							target: {
+								name: id,
+								value: JSON.stringify({
+									lat: places[0].geometry.location.lat(),
+									lng: places[0].geometry.location.lng(),
+									address: places[0].formatted_address,
+									url: places[0].url
+								})
+							}
+						},
 						id,
 						JSON.stringify({
 							lat: places[0].geometry.location.lat(),
