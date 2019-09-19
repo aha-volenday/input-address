@@ -1,6 +1,6 @@
 {
 	"name": "@volenday/input-address",
-	"version": "0.1.5",
+	"version": "0.1.6",
 	"main": "dist/index.min.js",
 	"repository": "https://jeromemiranda@bitbucket.org/volenday-dev/input-address",
 	"author": "Volenday <developers@volenday.com>",

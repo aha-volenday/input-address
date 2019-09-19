@@ -125,12 +125,16 @@ export default class InputAddress extends Component {
 		return JSON.stringify({ lat: null, lng: null, address: value, url: '' });
 	};
 
+	onChangeTimeout = null;
 	onChange = async value => {
 		const { id, onValidate } = this.props;
 
-		const errors = this.validate(value);
-		await this.setState({ errors, localAddressValue: value });
-		if (onValidate) onValidate(id, errors);
+		this.onChangeTimeout && clearTimeout(this.onChangeTimeout);
+		this.onChangeTimeout = setTimeout(async () => {
+			const errors = this.validate(value);
+			await this.setState({ errors, localAddressValue: value });
+			if (onValidate) onValidate(id, errors);
+		}, 500);
 	};
 
 	validate = value => {
