@@ -53,11 +53,11 @@ module.exports = {
 		libraryTarget: 'commonjs2'
 	},
 	externals: {
-		'react-google-maps': 'commonjs2 react-google-maps',
-		'validate.js': 'commonjs2 validate.js',
-		antd: 'commonjs2 antd',
-		react: 'commonjs2 react',
-		'react-dom': 'commonjs2 react-dom'
+		'react-google-maps': 'react-google-maps',
+		'validate.js': 'validate.js',
+		antd: 'antd',
+		react: 'react',
+		'react-dom': 'react-dom'
 	},
 	plugins: [
 		new webpack.optimize.AggressiveMergingPlugin(),
