@@ -1,6 +1,6 @@
 {
 	"name": "@volenday/input-address",
-	"version": "0.1.8",
+	"version": "1.0.0",
 	"main": "dist/index.min.js",
 	"repository": "https://jeromemiranda@bitbucket.org/volenday-dev/input-address",
 	"author": "Volenday <developers@volenday.com>",
@@ -12,9 +12,9 @@
 		"prepublishOnly": "webpack --progress -p"
 	},
 	"dependencies": {
-		"antd": "^3.25.0",
-		"react": "^16.11.0",
-		"react-dom": "^16.11.0",
+		"antd": "^3.25.2",
+		"react": "^16.12.0",
+		"react-dom": "^16.12.0",
 		"react-google-maps": "~9.4.5",
 		"validate.js": "~0.13.1"
 	},
@@ -42,7 +42,8 @@
 		"@babel/runtime": "^7.7.2",
 		"babel-loader": "^8.0.6",
 		"babel-plugin-react-html-attrs": "^2.1.0",
-		"core-js": "^3.4.0",
+		"compression-webpack-plugin": "^3.0.0",
+		"core-js": "^3.4.1",
 		"css-loader": "~3.2.0",
 		"file-loader": "~4.2.0",
 		"node-sass": "^4.13.0",
