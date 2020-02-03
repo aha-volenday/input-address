@@ -104,7 +104,7 @@ export default class InputAddress extends Component {
 			};
 		}
 
-		if (!nextProps.value && prevState.tempValue && !prevState.tempValueTyping) {
+		if ((!nextProps.value && prevState.tempValue && !prevState.tempValueTyping) || !nextProps.isModalOpen) {
 			return { tempValue: '' };
 		}
 
