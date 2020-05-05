@@ -1,9 +1,7 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { withGoogleMap, GoogleMap, Marker } from 'react-google-maps';
 import SearchBox from 'react-google-maps/lib/components/places/SearchBox';
 import { Form, Checkbox, Input, message } from 'antd';
-
-const { StandaloneSearchBox } = require('react-google-maps/lib/components/places/StandaloneSearchBox');
 
 import './styles.css';
 
@@ -103,6 +101,8 @@ export default class InputAddress extends Component {
 	}
 
 	renderInputStandalone() {
+		const { StandaloneSearchBox } = require('react-google-maps/lib/components/places/StandaloneSearchBox');
+
 		const {
 			disabled = false,
 			id,
@@ -251,7 +251,7 @@ export default class InputAddress extends Component {
 				/>
 				<span>&nbsp;Custom Address</span>
 				{!custom && (
-					<Fragment>
+					<>
 						<span>&nbsp;&nbsp;</span>
 						<label>
 							<Checkbox
@@ -262,7 +262,7 @@ export default class InputAddress extends Component {
 							/>
 							<span>&nbsp;Map</span>
 						</label>
-					</Fragment>
+					</>
 				)}
 				{custom
 					? this.renderInput()
