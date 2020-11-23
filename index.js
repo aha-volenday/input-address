@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
-import { withGoogleMap, GoogleMap, Marker } from 'react-google-maps';
-import SearchBox from 'react-google-maps/lib/components/places/SearchBox';
-import { Form, Checkbox, Input, message } from 'antd';
+import { withGoogleMap } from 'react-google-maps';
+import { Form, Checkbox, message, Skeleton } from 'antd';
 
 import './styles.css';
 
+const browser = typeof process.browser !== 'undefined' ? process.browser : true;
+
 const MapComponent = withGoogleMap(props => {
+	const { Input } = require('antd');
+	const { GoogleMap, Marker } = require('react-google-maps');
+	const SearchBox = require('react-google-maps/lib/components/places/SearchBox');
+
 	return (
 		<GoogleMap
 			ref={props.onMapMounted}
@@ -77,6 +82,8 @@ export default class InputAddress extends Component {
 	setAddressObject = value => JSON.stringify({ lat: null, lng: null, address: value, url: '' });
 
 	renderInput() {
+		const { Input } = require('antd');
+
 		const { disabled = false, id, label = '', onChange, placeholder = '', value = '' } = this.props;
 
 		const address = value !== '' ? JSON.parse(value).address : '';
@@ -101,6 +108,7 @@ export default class InputAddress extends Component {
 	}
 
 	renderInputStandalone() {
+		const { Input } = require('antd');
 		const { StandaloneSearchBox } = require('react-google-maps/lib/components/places/StandaloneSearchBox');
 
 		const {
@@ -264,11 +272,17 @@ export default class InputAddress extends Component {
 						</label>
 					</>
 				)}
-				{custom
-					? this.renderInput()
-					: showMap && withMap
-					? this.renderInputMap()
-					: this.renderInputStandalone()}
+				{browser ? (
+					custom ? (
+						this.renderInput()
+					) : showMap && withMap ? (
+						this.renderInputMap()
+					) : (
+						this.renderInputStandalone()
+					)
+				) : (
+					<Skeleton active paragraph={{ rows: 1, width: '100%' }} title={false} />
+				)}
 			</Form.Item>
 		);
 	}
