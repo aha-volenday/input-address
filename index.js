@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { withGoogleMap } from 'react-google-maps';
+import { GoogleMap, Marker, withGoogleMap } from 'react-google-maps';
+import SearchBox from 'react-google-maps/lib/components/places/SearchBox';
+import { StandaloneSearchBox } from 'react-google-maps/lib/components/places/StandaloneSearchBox';
 import { Form, Checkbox, message, Skeleton } from 'antd';
 
 import './styles.css';
@@ -8,8 +10,6 @@ const browser = typeof process.browser !== 'undefined' ? process.browser : true;
 
 const MapComponent = withGoogleMap(props => {
 	const { Input } = require('antd');
-	const { GoogleMap, Marker } = require('react-google-maps');
-	const SearchBox = require('react-google-maps/lib/components/places/SearchBox');
 
 	return (
 		<GoogleMap
@@ -109,7 +109,6 @@ export default class InputAddress extends Component {
 
 	renderInputStandalone() {
 		const { Input } = require('antd');
-		const { StandaloneSearchBox } = require('react-google-maps/lib/components/places/StandaloneSearchBox');
 
 		const {
 			disabled = false,
