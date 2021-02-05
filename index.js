@@ -4,9 +4,9 @@ import SearchBox from 'react-google-maps/lib/components/places/SearchBox';
 import { StandaloneSearchBox } from 'react-google-maps/lib/components/places/StandaloneSearchBox';
 import { Form, Checkbox, message, Skeleton } from 'antd';
 
-import './styles.css';
+const browser = typeof window !== 'undefined' ? true : false;
 
-const browser = typeof process.browser !== 'undefined' ? process.browser : true;
+if (browser) require('./styles.css');
 
 const MapComponent = withGoogleMap(props => {
 	const { Input } = require('antd');
