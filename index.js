@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { GoogleMap, Marker, withGoogleMap } from 'react-google-maps';
 import SearchBox from 'react-google-maps/lib/components/places/SearchBox';
 import { StandaloneSearchBox } from 'react-google-maps/lib/components/places/StandaloneSearchBox';
-import { Form, Checkbox, message, Skeleton } from 'antd';
+import { Form, Checkbox, message, Skeleton, Tooltip } from 'antd';
 
 const browser = typeof window !== 'undefined' ? true : false;
 
@@ -84,11 +84,11 @@ export default class InputAddress extends Component {
 	renderInput() {
 		const { Input } = require('antd');
 
-		const { disabled = false, id, label = '', onChange, placeholder = '', value = '' } = this.props;
+		const { disabled = false, id, label = '', onChange, placeholder = '', value = '', toolTip = {} } = this.props;
 
 		const address = value !== '' ? JSON.parse(value).address : '';
 
-		return (
+		const input = (
 			<Input
 				autoComplete="off"
 				disabled={disabled}
@@ -105,6 +105,8 @@ export default class InputAddress extends Component {
 				value={address}
 			/>
 		);
+
+		return Object.keys(toolTip) === 0 ? input : <Tooltip {...toolTip}>{input}</Tooltip>;
 	}
 
 	renderInputStandalone() {
@@ -117,12 +119,13 @@ export default class InputAddress extends Component {
 			onChange,
 			placeholder = '',
 			required = false,
+			toolTip = {},
 			value = ''
 		} = this.props;
 
 		const address = value !== '' ? JSON.parse(value).address : '';
 
-		return (
+		const standAloneSearchBox = (
 			<div data-standalone-searchbox="">
 				<StandaloneSearchBox
 					ref={this.standAloneTextBox}
@@ -156,15 +159,17 @@ export default class InputAddress extends Component {
 				</StandaloneSearchBox>
 			</div>
 		);
+
+		return Object.keys(toolTip) === 0 ? standAloneSearchBox : <Tooltip {...toolTip}>{standAloneSearchBox}</Tooltip>;
 	}
 
 	renderInputMap() {
 		const { bounds, center = { lat: 14.5613, lng: 121.0273 }, markers } = this.state;
-		const { id, label = '', onChange, placeholder = '', required = false, value = '' } = this.props;
+		const { id, label = '', onChange, placeholder = '', required = false, toolTip = {}, value = '' } = this.props;
 
 		const address = value !== '' ? JSON.parse(value).address : '';
 
-		return (
+		const mapComponent = (
 			<MapComponent
 				isMarkerShown
 				label={label}
@@ -220,6 +225,8 @@ export default class InputAddress extends Component {
 				id={id}
 			/>
 		);
+
+		return Object.keys(toolTip) === 0 ? mapComponent : <Tooltip {...toolTip}>{mapComponent}</Tooltip>;
 	}
 
 	render() {
