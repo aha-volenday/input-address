@@ -228,15 +228,15 @@ export default class InputAddress extends Component {
 			disabled = false,
 			extra = null,
 			id,
+			inlineError = true,
 			label = '',
 			required = false,
 			withLabel = false,
 			withMap = true
 		} = this.props;
 
-		const formItemCommonProps = {
+		let formItemCommonProps = {
 			colon: false,
-			help: errors.length != 0 ? errors[0] : '',
 			label: withLabel ? (
 				<>
 					<div style={{ float: 'right' }}>{extra}</div> <span class="label">{label}</span>
@@ -247,6 +247,7 @@ export default class InputAddress extends Component {
 			required,
 			validateStatus: errors.length != 0 ? 'error' : 'success'
 		};
+		if (inlineError) formItemCommonProps = { ...formItemCommonProps, help: errors.length != 0 ? errors[0] : '' };
 
 		return (
 			<Form.Item {...formItemCommonProps}>
